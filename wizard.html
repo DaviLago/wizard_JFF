@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./bootstrap4/css/bootstrap.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+    <title>Wizard</title>
+
+    <style>
+    .wizard-container{
+        background-color: #F0F0F0;
+        box-shadow: 10px 10px 38px -8px rgba(0,0,0,0.47);
+        padding: 50px 40px 20px 40px;
+    }
+    ul.step-wizard-container{
+        display: flex;
+        justify-content: space-between;
+        list-style-type: none;
+        position: relative;
+        bottom: 25px;
+        padding: 0 5%;
+        opacity: 1;
+    }
+    .step-wizard{
+        background-color: #f1f1f1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: transparent;
+    }
+    .step-wizard.active .step-circle{
+        border-color: #0054a6;
+        color: #0054a6;        
+    }
+    .step-wizard.active .step-title{
+        color: #0054a6;
+        font-weight: bold;
+    }
+    .step-circle{
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 4px solid;
+        border-color: #707070;
+        background: #FFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #707070;;
+    }
+    .step-title{
+        top: 40px;
+        color: #707070;
+    }
+    .progress-step{
+        height: 10px;
+        background-color: #707070;
+        margin: 0 0%;
+        opacity: 1;
+        padding-left: 0px;
+    }
+    .progress-bar-step{
+        background-color: #0054a6;
+        opacity: 0.4;
+        width: 0%;
+        border-radius: 0.25rem;
+    }
+    .step-wizard-content{
+        position: absolute;
+        left: -100%;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0); 
+        white-space: nowrap;
+        clip-path: inset(50%);
+        border: 0;
+    }
+    .step-wizard-content.active{
+        position: static;
+        width: auto;
+        height: auto;
+        min-height: 0px;
+        overflow: visible;
+        clip: rect(0, 0, 0, 0);
+        white-space: wrap;
+        clip-path: none;
+    }
+    </style>
+
+  </head>
+  <body>
+    <div class="container mt-5">
+        
+        <section class="wizard-container" id="teste-wizard-jquery">
+
+            <header class="px-3">
+                <div class="progress progress-step">
+                    <div class="progress-bar progress-bar-step"></div>
+                </div>
+                <ul class="step-wizard-container">
+                    <li class="step-wizard active">
+                        <span class="step-circle">
+                            <i class="fa fa-check"></i>
+                        </span>
+                        <span class="step-title">Step1</span>
+                    </li>
+                    <li class="step-wizard">
+                        <span class="step-circle">
+                            <i class="fa fa-check"></i>
+                        </span>
+                        <span class="step-title">Step2</span>
+                    </li>
+                    <li class="step-wizard">
+                        <span class="step-circle">
+                            <i class="fa fa-check"></i>
+                        </span>
+                        <span class="step-title">Step3</span>
+                    </li>
+                    <li class="step-wizard">
+                        <span class="step-circle">
+                            <i class="fa fa-check"></i>
+                        </span>
+                        <span class="step-title">Step4</span>
+                    </li>
+                </ul>
+            </header>
+
+            <article class="step-wizard-content row m-0 active">
+                <h1>Form 1</h1>
+            </article>
+            <article class="step-wizard-content m-0 row">
+                <h1>Form 2</h1>
+            </article>
+            <article class="step-wizard-content m-0 row">
+                <h1>Form 3</h1>
+            </article>
+            <article class="step-wizard-content m-0 row">
+                <h1>Form 4</h1>
+            </article>
+
+            <footer class="row justify-content-between mt-3">
+                <button type="button" class="btn btn-primary disabled" id="previous">Previous</button>
+                <button type="button" class="btn btn-primary" id="next">Next</button>
+            </footer>
+
+        </section>
+
+        
+    </div>    
+    
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="./jquery/jquery-3.3.1.min.js"></script>
+    <script src="./popper/popper.min.js"></script>
+    <script src="./bootstrap4/js/bootstrap.min.js"></script>
+    <script src="./jquery/jquery.steps.js"></script>
+
+    <script>
+        $(document).ready(function(){        
+        var headerActive;
+        var contentActive;
+        var steps = {
+            stepActive : $(".step-wizard.active").index(),
+            stepsTotal : $(".step-wizard-container").children().length,
+            calcProgressWidth : function () {
+                this.stepActive = $(".step-wizard.active").index();
+                var containerPadding = (($("ul.step-wizard-container").css("padding-left").split("px").shift()*200)/$("ul.step-wizard-container").width())-1.1;
+                var stepFinal = (this.stepsTotal == this.stepActive+1) ? 10 : 5;
+                var stepElemnet = (($("li.step-wizard").width()*100)/$("ul.step-wizard-container").outerWidth());
+                return (((100 - 10 - (stepElemnet*this.stepsTotal))/(this.stepsTotal-1)) * this.stepActive) + ((this.stepActive+1) * (stepElemnet)) + stepFinal;
+            },
+            getStepActive : function(){
+                this.stepActive = $(".step-wizard.active").index();
+                return this.stepActive;
+            }
+        };
+        $(".progress-bar-step").width(steps.calcProgressWidth() + "%");
+
+            $("#previous").click(function(){
+                if(steps.getStepActive() == 0) return false;
+                headerActive = $(".step-wizard.active");
+                contentActive = $(".step-wizard-content.active");                
+                
+                headerActive.removeClass("active");
+                headerActive.prev().addClass("active");
+                contentActive.removeClass("active");
+                contentActive.prev().addClass("active");
+                $(".progress-bar-step").width(steps.calcProgressWidth() + "%");
+
+                if(steps.getStepActive() == 0)
+                    $(this).addClass("disabled");
+                $(this).siblings().removeClass("disabled");
+
+            });
+            $("#next").click(function(){
+                if(steps.stepsTotal == steps.getStepActive() + 1) return false;      
+                headerActive = $(".step-wizard.active");
+                contentActive = $(".step-wizard-content.active");
+                    
+                headerActive.removeClass("active");
+                headerActive.next().addClass("active");
+                contentActive.removeClass("active");
+                contentActive.next().addClass("active");
+                $(".progress-bar-step").width(steps.calcProgressWidth() + "%");
+                
+                if(steps.stepsTotal == steps.getStepActive() + 1)
+                    $(this).addClass("disabled");
+                $(this).siblings().removeClass("disabled");
+
+            });
+
+        });
+        
+    </script>
+  </body>
+
+  
+</html>
